@@ -1,0 +1,22 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Product",
+      "name": "Custom SEO Sprint",
+      "offers": {
+        "@type": "Offer",
+        "price": 250
+      }
+    },
+    {
+      "@type": "Article",
+      "headline": "Why Agents Fail",
+      "image": "https://example.com/cover.jpg",
+      "datePublished": "2026-10-19",
+      "author": {
+        "@id": "#unknown-author"
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://example.com/#organization",
+      "name": "Genisoft",
+      "url": "https://example.com/"
+    },
+    {
+      "@type": "Person",
+      "@id": "https://example.com/#author-lefi",
+      "name": "Abdelmonem Lefi"
+    },
+    {
+      "@type": "Article",
+      "@id": "https://example.com/article/#webpage",
+      "headline": "Why Autonomous Agents Fail on WordPress",
+      "image": "https://example.com/cover.jpg",
+      "datePublished": "2026-10-19",
+      "author": {
+        "@id": "https://example.com/#author-lefi"
+      },
+      "publisher": {
+        "@id": "https://example.com/#organization"
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://example.com/product/#seo-sprint",
+      "name": "Custom SEO Sprint",
+      "offers": {
+        "@type": "Offer",
+        "price": 250,
+        "priceCurrency": "EUR"
+      }
+    }
+  ]
+}

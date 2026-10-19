@@ -1,0 +1,50 @@
+name: Test Genisoft WP SEO Harness
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 18.x, 20.x, 22.x ]
+        php-version: [ '8.1', '8.2', '8.3' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Setup PHP ${{ matrix.php-version }}
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        coverage: none
+        tools: composer
+
+    - name: Validate composer.json strictly
+      run: composer validate --strict
+
+    - name: PHP Syntax Linting
+      run: |
+        find tools/ examples/ projects/ -name "*.php" -exec php -l {} \;
+
+    - name: Run Schema.org Validator Self-Tests
+      run: node tools/schema-graph-validator.js --test
+
+    - name: Run PHP SEO Safety Verifier Self-Tests
+      run: php tools/verify-seo-safety.php --self-test
+
+    - name: Run Harness 100-Point Audit
+      run: bash tools/audit-harness.sh

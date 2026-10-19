@@ -1,0 +1,25 @@
+{
+  "name": "genisoft/wp-seo-harness",
+  "description": "Autonomous WordPress Technical SEO & Core Web Vitals Engineering Harness for AI Coding Agents",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Abdelmonem Lefi",
+      "email": "contact@genisoft.fr",
+      "homepage": "https://lefi-abdelmonem.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Genisoft\\WpSeoHarness\\": "tools/"
+    }
+  },
+  "scripts": {
+    "test": "node tools/schema-graph-validator.js --test && php tools/verify-seo-safety.php --self-test",
+    "audit": "bash tools/audit-harness.sh"
+  }
+}

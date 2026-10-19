@@ -1,0 +1,21 @@
+# Dependency directories
+node_modules/
+vendor/
+
+# Environment and sensitive credentials
+.env
+.env.local
+*.log
+
+# WordPress runtime artifacts
+wp-config.php
+wp-content/uploads/
+wp-content/cache/
+debug.log
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

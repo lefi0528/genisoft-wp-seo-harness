@@ -1,0 +1,61 @@
+{
+  "project": "WordPress Technical SEO Audit & Hardening",
+  "harness_version": "1.0.0",
+  "author": "Genisoft",
+  "tasks": [
+    {
+      "id": "SEO-01",
+      "phase": "Pre-Flight & Safety",
+      "title": "Deploy Runtime Safety Guard (MU-Plugin)",
+      "description": "Install tools/wp-seo-guard.php to wp-content/mu-plugins/ to prevent accidental noindex and canonical redirect loops.",
+      "status": "pending",
+      "verification_gate": "php tools/verify-seo-safety.php tools/wp-seo-guard.php",
+      "evidence": null
+    },
+    {
+      "id": "SEO-02",
+      "phase": "Schema.org Architecture",
+      "title": "Implement Connected Knowledge Graph (@graph)",
+      "description": "Construct single connected JSON-LD graph linking WebSite, Organization, Author, and BreadcrumbList via canonical @id URIs.",
+      "status": "pending",
+      "verification_gate": "node tools/schema-graph-validator.js",
+      "evidence": null
+    },
+    {
+      "id": "SEO-03",
+      "phase": "Robots & Indexing",
+      "title": "Configure Dynamic wp_robots Directives",
+      "description": "Implement max-snippet:-1, max-image-preview:large, max-video-preview:-1 while safeguarding is_front_page() against noindex.",
+      "status": "pending",
+      "verification_gate": "php tools/verify-seo-safety.php",
+      "evidence": null
+    },
+    {
+      "id": "SEO-04",
+      "phase": "Canonical Hygiene",
+      "title": "Normalize Canonical URLs Across Pagination & Taxonomies",
+      "description": "Ensure self-referential HTTPS canonicals, trailing-slash normalization, and pagination handling on archive templates.",
+      "status": "pending",
+      "verification_gate": "php tools/verify-seo-safety.php",
+      "evidence": null
+    },
+    {
+      "id": "SEO-05",
+      "phase": "Core Web Vitals",
+      "title": "Implement LCP Resource Preload & Font-Display Swap",
+      "description": "Hook into wp_head to inject fetchpriority='high' and link rel='preload' for above-the-fold hero image and primary web fonts.",
+      "status": "pending",
+      "verification_gate": "php -l",
+      "evidence": null
+    },
+    {
+      "id": "SEO-06",
+      "phase": "Post-Flight Verification",
+      "title": "End-to-End Harness Audit & Final Certification",
+      "description": "Execute tools/audit-harness.sh and verify zero console errors, clean debug.log, and 100/100 harness rating.",
+      "status": "pending",
+      "verification_gate": "bash tools/audit-harness.sh",
+      "evidence": null
+    }
+  ]
+}
