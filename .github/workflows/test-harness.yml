@@ -56,3 +56,24 @@ jobs:
 
     - name: Run Harness 100-Point Audit
       run: bash tools/audit-harness.sh
+
+  wordpress-e2e:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        coverage: none
+        extensions: pdo_sqlite
+
+    - name: End-to-end test on a real WordPress (SQLite)
+      run: bash tests/e2e/wordpress-e2e.sh
