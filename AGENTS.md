@@ -13,7 +13,7 @@ Your goal is to maximize search engine discoverability, structured data coverage
 ### 🚨 NON-NEGOTIABLE SAFETY INVARIANTS
 1. **Zero Core/Parent Modification**: NEVER touch `wp-admin/`, `wp-includes/`, or parent theme directories. Work strictly inside a custom child theme, dedicated plugin, or `wp-content/mu-plugins/`.
 2. **Canonical Integrity**:
-   - Canonical URLs MUST be absolute, lowercase, and strictly use `https://`.
+   - Canonical URLs MUST be absolute and strictly use `https://`.
    - Never point canonicals to redirected URLs (301/302) or 404 pages.
    - Always filter `get_canonical_url` (applied by `wp_get_canonical_url()`) rather than hardcoding `<link rel="canonical">`.
 3. **NoIndex Safeguard**:

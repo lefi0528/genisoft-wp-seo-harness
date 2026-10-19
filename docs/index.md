@@ -17,14 +17,14 @@ hero:
       link: https://github.com/lefi0528/genisoft-wp-seo-harness
 
 features:
-  - title: 🛡️ Zero Regressions
-    details: Non-destructive verification gates preventing accidental de-indexing, canonical redirect loops, and fatal Error 500 crashes.
+  - title: 🛡️ Regression Gates
+    details: Pre-commit gates that block accidental de-indexing, insecure canonicals and unescaped meta, plus a runtime guard for homepage noindex and self-redirect loops.
   - title: 🧩 Connected Knowledge Graph
-    details: Complete Google Search Central compliant Schema.org @graph generation with strict @id entity cross-referencing.
+    details: JSON-LD validated against Google's documented requirements, with every @id reference required to resolve inside the page's @graph.
   - title: 🔄 Multi-Session Continuity
     details: Eliminates agent amnesia through persistent state machines (seo_tasks.json and progress.md) with verifiable evidence tracking.
-  - title: ⚡ Core Web Vitals Ready
-    details: Safe resource prioritization for LCP, font-display swap injection, and non-blocking asset loading.
+  - title: ⚡ Core Web Vitals Tasks
+    details: Backlog template for LCP preload and font-display work (task SEO-05), shipped through the same verification gates.
 ---
 
 ## What is Genisoft WP SEO Harness?
@@ -36,4 +36,4 @@ When large language models like Claude 3.7 Sonnet, Opus 4.5, or GPT-5/Codex work
 2. **Hook Collisions**: WordPress filters (`wp_robots`, `get_canonical_url`, `template_redirect`) interact globally. An agent altering one filter without verification can de-index an entire website overnight.
 3. **Premature Victory**: Unharnessed agents declare "Done!" without running automated proof.
 
-Genisoft WP SEO Harness provides the **instructions, state persistence, verification gates, scope boundaries, and runtime guards** needed to make autonomous coding agents 100% reliable on WordPress.
+Genisoft WP SEO Harness provides the **instructions, state persistence, verification gates, scope boundaries, and runtime guards** needed to make autonomous coding agents' WordPress SEO work verifiable before it reaches production.

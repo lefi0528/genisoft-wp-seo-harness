@@ -353,7 +353,7 @@ class SeoSafetyVerifier {
         if (stripos($static, 'http://') === 0) {
             $this->violation(self::RULE_CANONICAL_HTTP, $line, 'Insecure HTTP canonical URL detected. Canonical tags must always use HTTPS.');
         } elseif (preg_match('#^(//|/|\./|\.\./)#', $static)) {
-            $this->violation(self::RULE_CANONICAL_RELATIVE, $line, 'Relative canonical URL detected. Search engines require absolute URLs.');
+            $this->violation(self::RULE_CANONICAL_RELATIVE, $line, 'Relative canonical URL detected. Google recommends absolute URLs and the harness requires them.');
         }
     }
 

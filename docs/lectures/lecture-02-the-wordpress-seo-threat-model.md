@@ -21,7 +21,7 @@ add_filter('wp_robots', function($robots) {
 ```
 
 ### Business Impact
-Googlebot crawls the homepage, observes `<meta name="robots" content="noindex" />`, and purges the domain from index results within 48 to 72 hours.
+Googlebot recrawls the homepage, sees `<meta name="robots" content="noindex" />`, and drops it from search results. Every affected URL follows as it is recrawled: on a frequently crawled site, the main landing pages can disappear within days.
 
 ---
 
@@ -35,7 +35,7 @@ echo '<link rel="canonical" href="http://' . $_SERVER['HTTP_HOST'] . $_SERVER['R
 ```
 - Emits insecure `http://` instead of `https://`.
 - Preserves tracking query parameters (`?gclid=...`, `?utm_source=...`), destroying canonical consolidation.
-- Creates relative URLs (`href="/blog/"`) which fail strict search engine parsing.
+- Emits relative URLs (`href="/blog/"`): Google supports them but recommends absolute URLs, because relative paths break as soon as the page is served from another host or scheme (staging, CDN, HTTP).
 
 ---
 
@@ -68,7 +68,7 @@ Search engine crawlers truncate the description, or malicious input breaks into 
 
 | Threat | Unharnessed Behavior | Genisoft Harness Defense |
 |---|---|---|
-| Sitewide NoIndex | Silent execution | Intercepted at compile-time by `verify-seo-safety.php` + runtime block in `wp-seo-guard.php` |
-| Insecure Canonicals | Allowed | Regex safety gate flags HTTP/relative canonicals |
+| Sitewide NoIndex | Silent execution | Blocked before commit by `verify-seo-safety.php` (any noindex not restricted to narrow contexts) + homepage runtime guard in `wp-seo-guard.php` |
+| Insecure Canonicals | Allowed | Tokenizer-based safety gate flags HTTP/relative canonicals |
 | Fragmented Schema | Broken JSON-LD | Validated by `schema-graph-validator.js` with `@id` graph consistency |
 | Unescaped Meta | Vulnerable | Enforces `esc_attr()` requirement |
