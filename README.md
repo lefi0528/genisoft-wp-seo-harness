@@ -8,6 +8,7 @@
 [![AI Agents Ready](https://img.shields.io/badge/AI%20Agents-Claude%20Code%20%7C%20Codex%20%7C%20Antigravity-8A2BE2?style=for-the-badge)](https://lefi0528.github.io/genisoft-wp-seo-harness/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success?style=for-the-badge)](LICENSE)
 [![Schema.org Validated](https://img.shields.io/badge/Schema.org-%40graph%20Validated-orange?style=for-the-badge)](https://schema.org)
+[![Fiverr Top Rated Seller](https://img.shields.io/badge/Fiverr-Top%20Rated%20Seller-1DBF73?style=for-the-badge&logo=fiverr&logoColor=white)](https://www.fiverr.com/genisoft0528)
 
 ---
 
@@ -137,7 +138,7 @@ Created by **Abdelmonem Lefi (Genisoft)**
 *Senior Full-Stack & Technical SEO Engineer | Agentic AI Specialist*
 
 - 🌐 **Portfolio & Case Studies**: [lefi-abdelmonem.com](https://lefi-abdelmonem.com)
-- 💼 **Fiverr**: [genisoft0528](https://www.fiverr.com/genisoft0528) — Web engineering & technical SEO services
+- 💼 **Fiverr**: Top Rated Seller — [genisoft0528](https://www.fiverr.com/genisoft0528), web engineering & technical SEO services
 - 🐙 **GitHub**: [@lefi0528](https://github.com/lefi0528)
 
 ---
