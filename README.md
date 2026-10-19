@@ -58,7 +58,7 @@ Full texts and interactive documentation available in `docs/lectures/`:
 - **[L02: WordPress SEO Threat Model](docs/lectures/lecture-02-the-wordpress-seo-threat-model.md)** — The 6 catastrophic failure modes: sitewide noindex, canonical loops, schema hallucination, and XSS.
 - **[L03: The 5 Subsystems for WordPress](docs/lectures/lecture-03-the-five-subsystems-for-wordpress.md)** — Adapting Instructions, State, Verification, Scope, and Lifecycle to WordPress.
 - **[L04: Progressive Disclosure & AGENTS.md](docs/lectures/lecture-04-progressive-disclosure-and-agents-md.md)** — Why monolithic 2000-line prompts fail and how to structure modular guidelines.
-- **[L05: Multi-Session State Persistence](docs/lectures/lecture-05-multi-session-state-persistence.md)** — Defeating agent amnesia with `seo_tasks.json` and `progress.md`.
+- **[L05: Multi-Session State Persistence](docs/lectures/lecture-05-multi-session-state-persistence.md)** — Carrying context across sessions with `seo_tasks.json` and `progress.md`.
 - **[L06: Session Init & WP-CLI](docs/lectures/lecture-06-session-initialization-and-wp-cli.md)** — Establishing environment health before writing a single line of code.
 - **[L07: Scope Control & Atomic Tasks](docs/lectures/lecture-07-scope-control-and-atomic-tasks.md)** — Enforcing the 1-task-per-turn invariant and the Definition of Done.
 - **[L08: Verification Gates & Evidence](docs/lectures/lecture-08-verification-gates-and-evidence.md)** — Replacing subjective self-assessment with deterministic CLI proof.

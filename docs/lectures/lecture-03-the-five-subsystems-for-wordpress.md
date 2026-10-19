@@ -31,7 +31,7 @@ To transform an unreliable AI agent into a deterministic software engineer on Wo
 
 ## 2. State Subsystem (`seo_tasks.json` & `progress.md`)
 - Maintains machine-readable and human-readable state on disk.
-- Enables session $N+1$ to resume with zero context loss from session $N$.
+- Lets session $N+1$ resume where session $N$ stopped, from what is written on disk rather than from memory.
 - Records concrete verification command output as proof of completion.
 
 ## 3. Verification Subsystem (`tools/`)

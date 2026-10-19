@@ -22,7 +22,7 @@ features:
   - title: 🧩 Connected Knowledge Graph
     details: JSON-LD validated against Google's documented requirements, with every @id reference required to resolve inside the page's @graph.
   - title: 🔄 Multi-Session Continuity
-    details: Eliminates agent amnesia through persistent state machines (seo_tasks.json and progress.md) with verifiable evidence tracking.
+    details: Each session reads and updates seo_tasks.json and progress.md, so the next one resumes where the last stopped, with the verification evidence on record.
   - title: ⚡ Core Web Vitals Tasks
     details: Backlog template for LCP preload and font-display work (task SEO-05), shipped through the same verification gates.
 ---
