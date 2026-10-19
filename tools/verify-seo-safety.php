@@ -569,7 +569,12 @@ class SeoSafetyVerifier {
 
         // [$object, 'method'] or array($object, 'method')
         $first = $this->tokens[$range[0]];
-        $open = $first->text === '[' ? $range[0] : ($first->is(T_ARRAY) ? $range[0] + 1 : null);
+        $open = null;
+        if ($first->text === '[') {
+            $open = $range[0];
+        } elseif ($first->is(T_ARRAY)) {
+            $open = $range[0] + 1;
+        }
         if ($open !== null && isset($this->match[$open])) {
             $items = $this->splitTopLevel([$open + 1, $this->match[$open]], [',']);
             $method = isset($items[1]) ? $this->stringValue($items[1]) : null;
@@ -646,7 +651,10 @@ class SeoSafetyVerifier {
         $token = $this->tokens[$range[0]];
         $text = strtolower($token->text);
         if ($token->is(T_STRING)) {
-            return $text === 'true' ? true : (in_array($text, ['false', 'null'], true) ? false : null);
+            if ($text === 'true') {
+                return true;
+            }
+            return in_array($text, ['false', 'null'], true) ? false : null;
         }
         if ($token->is([T_LNUMBER, T_DNUMBER])) {
             return (float) $text != 0;
@@ -679,7 +687,12 @@ class SeoSafetyVerifier {
             while ($close < $count && !$this->tokens[$close]->is(T_CLOSE_TAG)) {
                 $close++;
             }
-            $start = $token->is(T_OPEN_TAG_WITH_ECHO) ? $i + 1 : ((($this->tokens[$i + 1] ?? null)?->is([T_ECHO, T_PRINT])) ? $i + 2 : null);
+            $start = null;
+            if ($token->is(T_OPEN_TAG_WITH_ECHO)) {
+                $start = $i + 1;
+            } elseif (($this->tokens[$i + 1] ?? null)?->is([T_ECHO, T_PRINT])) {
+                $start = $i + 2;
+            }
             $end = $close;
             if ($start !== null && ($this->tokens[$end - 1] ?? null)?->text === ';') {
                 $end--;
@@ -789,7 +802,12 @@ class SeoSafetyVerifier {
             foreach ($pieces as $k => $piece) {
                 if ($k % 2 === 0 || $piece === '%%' || !str_ends_with($piece, 's')) {
                     // Literal text, an escaped percent sign, or a numeric placeholder (always safe)
-                    $text = $k % 2 === 0 ? $piece : ($piece === '%%' ? '%' : '0');
+                    $text = '0';
+                    if ($k % 2 === 0) {
+                        $text = $piece;
+                    } elseif ($piece === '%%') {
+                        $text = '%';
+                    }
                     if ($text !== '') {
                         $result[] = ['text', $text, $part[2]];
                     }

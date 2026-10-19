@@ -7,13 +7,13 @@
 
 set -euo pipefail
 
-if [ "$#" -eq 0 ]; then
+if [[ "$#" -eq 0 ]]; then
     echo "Usage: bash tools/lint-php.sh <file-or-directory> [more paths...]" >&2
     exit 2
 fi
 
 for path in "$@"; do
-    if [ ! -e "$path" ]; then
+    if [[ ! -e "$path" ]]; then
         echo "Path not found: $path" >&2
         exit 2
     fi
@@ -32,4 +32,4 @@ while IFS= read -r -d '' file; do
 done < <(find "$@" -type f -name '*.php' -print0)
 
 echo "PHP files linted: ${checked}, with syntax errors: ${failed}"
-[ "$failed" -eq 0 ]
+[[ "$failed" -eq 0 ]]

@@ -21,7 +21,7 @@ class WpSeoGuard {
         add_filter('wp_robots', [__CLASS__, 'guardRobotsMeta'], 9999);
 
         // 2. Normalize canonical URLs. WordPress core applies 'get_canonical_url' inside wp_get_canonical_url().
-        add_filter('get_canonical_url', [__CLASS__, 'guardCanonicalUrl'], 9999, 2);
+        add_filter('get_canonical_url', [__CLASS__, 'guardCanonicalUrl'], 9999);
 
         // 3. Halt redirects that point back to the requested URL (they can only loop)
         add_filter('wp_redirect', [__CLASS__, 'guardSelfRedirect'], 9999, 2);
@@ -48,10 +48,9 @@ class WpSeoGuard {
      * permalink structure, so the canonical never points to a redirecting URL. Query strings and fragments are preserved.
      *
      * @param string|false $canonical_url
-     * @param \WP_Post|null $post
      * @return string|false
      */
-    public static function guardCanonicalUrl($canonical_url, $post = null) {
+    public static function guardCanonicalUrl($canonical_url) {
         if (!is_string($canonical_url) || $canonical_url === '') {
             return $canonical_url;
         }
@@ -97,7 +96,12 @@ class WpSeoGuard {
         $scheme  = self::requestScheme();
         $origin  = $scheme . '://' . $_SERVER['HTTP_HOST'];
         // Resolve like a browser: //host/path keeps the request scheme, /path keeps the request origin
-        $target  = str_starts_with($location, '//') ? $scheme . ':' . $location : (str_starts_with($location, '/') ? $origin . $location : $location);
+        $target  = $location;
+        if (str_starts_with($location, '//')) {
+            $target = $scheme . ':' . $location;
+        } elseif (str_starts_with($location, '/')) {
+            $target = $origin . $location;
+        }
         $current = $origin . $_SERVER['REQUEST_URI'];
 
         if (self::normalizeUrl($target) !== self::normalizeUrl($current)) {
