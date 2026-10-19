@@ -3,6 +3,7 @@
 > A complete, project-based curriculum and runtime framework for Claude Code, OpenAI Codex, Antigravity, and Cursor.  
 > Conceived & Engineered by **Abdelmonem Lefi (Genisoft)**.
 
+[![Tests](https://img.shields.io/github/actions/workflow/status/lefi0528/genisoft-wp-seo-harness/test-harness.yml?branch=main&style=for-the-badge&label=Tests&logo=githubactions&logoColor=white)](https://github.com/lefi0528/genisoft-wp-seo-harness/actions/workflows/test-harness.yml)
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759B?style=for-the-badge&logo=wordpress&logoColor=white)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.1%20--%208.3-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
 [![AI Agents Ready](https://img.shields.io/badge/AI%20Agents-Claude%20Code%20%7C%20Codex%20%7C%20Antigravity-8A2BE2?style=for-the-badge)](https://lefi0528.github.io/genisoft-wp-seo-harness/)
