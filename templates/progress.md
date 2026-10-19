@@ -15,5 +15,5 @@
 - **Completed**: Harness scaffolding, verification scripts, and safety gates deployed.
 - **Evidence**:
   - `tools/schema-graph-validator.js --test` passed (3/3 unit tests).
-  - `tools/verify-seo-safety.php --self-test` passed (3/3 safety filters).
+  - `tools/verify-seo-safety.php --self-test` passed (all fixtures in `tests/fixtures/safety/`).
 - **Next Session Goal**: Pick task `SEO-01` from `seo_tasks.json`.

@@ -1,27 +1,49 @@
 #!/usr/bin/env node
 /**
  * Genisoft WordPress SEO Harness - Schema.org JSON-LD Graph Validator
- * 
- * Validates JSON-LD structured data against Google Search Central specifications.
- * Supports interconnected entity graphs (@graph), @id cross-referencing,
- * and standard Google Rich Result entity schemas.
- * 
+ *
+ * Validates JSON-LD structured data against Google Search Central requirements
+ * and the harness graph rules: every @graph entity has an @id, and every @id
+ * reference resolves to an entity defined on the same page.
+ * Nested entities, @type arrays and multiple JSON-LD blocks per page are supported.
+ *
  * @author Abdelmonem Lefi (Genisoft)
  * @license MIT
  */
 
 const fs = require('fs');
 
-const REQUIRED_FIELDS_BY_TYPE = {
-  WebSite: ['name', 'url'],
-  Organization: ['name', 'url'],
+// Properties Google Search Central marks as required for rich results
+const GOOGLE_REQUIRED_FIELDS = {
+  Product: ['name'],
   LocalBusiness: ['name', 'address'],
-  Article: ['headline', 'image', 'datePublished', 'author'],
-  BlogPosting: ['headline', 'image', 'datePublished', 'author'],
-  Product: ['name', 'offers'],
-  BreadcrumbList: ['itemListElement'],
-  FAQPage: ['mainEntity']
+  BreadcrumbList: ['itemListElement']
 };
+
+// Properties Google recommends (Article has no required property)
+const GOOGLE_RECOMMENDED_FIELDS = {
+  Article: ['headline', 'image', 'datePublished', 'author'],
+  NewsArticle: ['headline', 'image', 'datePublished', 'author'],
+  BlogPosting: ['headline', 'image', 'datePublished', 'author']
+};
+
+// Harness conventions (AGENTS.md / SEO_RULES_SPEC.md), not Google requirements
+const HARNESS_REQUIRED_FIELDS = {
+  WebSite: ['name', 'url'],
+  Organization: ['name', 'url']
+};
+
+const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+const isPresent = (value) => value !== undefined && value !== null && value !== '';
+const asArray = (value) => (Array.isArray(value) ? value : [value]);
+const isReference = (value) => isObject(value) && isPresent(value['@id']) && Object.keys(value).length === 1;
+const typesOf = (entity) => asArray(entity['@type']).filter((type) => typeof type === 'string');
+
+/** Returns the content of every <script type="application/ld+json"> block, whatever its other attributes */
+function extractJsonLdBlocks(html) {
+  const pattern = /<script\b[^>]*\btype\s*=\s*["']?application\/ld\+json["']?[^>]*>([\s\S]*?)<\/script>/gi;
+  return [...html.matchAll(pattern)].map((match) => match[1]);
+}
 
 class SchemaValidator {
   constructor() {
@@ -41,118 +63,189 @@ class SchemaValidator {
   }
 
   validate(jsonLd) {
+    return this.validateDocuments([jsonLd]);
+  }
+
+  /** Validates every JSON-LD block of one page together, so @id references can cross blocks */
+  validateDocuments(documents) {
     this.errors = [];
     this.warnings = [];
     this.entityMap.clear();
 
-    let data;
-    if (typeof jsonLd === 'string') {
-      try {
-        data = JSON.parse(jsonLd);
-      } catch (e) {
-        this.errors.push(`Invalid JSON syntax: ${e.message}`);
-        return this.result();
-      }
-    } else {
-      data = jsonLd;
-    }
-
-    const entities = this.extractEntities(data);
-
-    // Index all entities by @id
-    for (const entity of entities) {
-      if (entity && entity['@id']) {
-        if (this.entityMap.has(entity['@id'])) {
-          this.warnings.push(`Duplicate @id detected: "${entity['@id']}"`);
+    const roots = [];
+    documents.forEach((document, index) => {
+      let data = document;
+      if (typeof document === 'string') {
+        try {
+          data = JSON.parse(document);
+        } catch (e) {
+          const block = documents.length > 1 ? ` in JSON-LD block #${index + 1}` : '';
+          this.errors.push(`Invalid JSON syntax${block}: ${e.message}`);
+          return;
         }
-        this.entityMap.set(entity['@id'], entity);
       }
-    }
+      const isGraph = isObject(data) && Array.isArray(data['@graph']);
+      for (const entity of this.extractEntities(data)) {
+        roots.push({ entity, isGraph });
+      }
+    });
 
-    // Validate each entity
-    for (const entity of entities) {
-      this.validateEntity(entity);
+    // Index every entity definition, top-level or nested, by @id
+    roots.forEach(({ entity }) => this.indexEntities(entity));
+
+    for (const { entity, isGraph } of roots) {
+      if (!isObject(entity) || !isPresent(entity['@type'])) {
+        this.errors.push(`Entity is missing required '@type' property: ${JSON.stringify(entity).slice(0, 80)}...`);
+        continue;
+      }
+      if (isGraph && !isPresent(entity['@id'])) {
+        this.errors.push(`[${typesOf(entity).join(', ')}] Missing '@id' required by the harness for every @graph entity`);
+      }
+      this.walk(entity);
     }
 
     return this.result();
   }
 
-  validateRequiredFields(entity, type) {
-    const required = REQUIRED_FIELDS_BY_TYPE[type];
-    if (!required) return;
+  indexEntities(node) {
+    if (Array.isArray(node)) {
+      node.forEach((child) => this.indexEntities(child));
+      return;
+    }
+    if (!isObject(node) || isReference(node)) {
+      return;
+    }
+    if (isPresent(node['@id'])) {
+      if (this.entityMap.has(node['@id'])) {
+        this.warnings.push(`Duplicate @id detected: "${node['@id']}"`);
+      }
+      this.entityMap.set(node['@id'], node);
+    }
+    Object.values(node).forEach((value) => this.indexEntities(value));
+  }
 
-    for (const field of required) {
-      if (entity[field] === undefined || entity[field] === null || entity[field] === '') {
-        this.errors.push(`[${type}] Missing required Google Rich Result property: '${field}'`);
+  walk(node) {
+    if (Array.isArray(node)) {
+      node.forEach((child) => this.walk(child));
+      return;
+    }
+    if (!isObject(node)) {
+      return;
+    }
+    if (isReference(node)) {
+      this.checkReference(node['@id']);
+      return;
+    }
+    if (isPresent(node['@type'])) {
+      this.validateEntity(node);
+    }
+    for (const [key, value] of Object.entries(node)) {
+      if (key !== '@context' && (isObject(value) || Array.isArray(value))) {
+        this.walk(value);
       }
     }
   }
 
-  validateProductOffers(entity) {
-    if (!entity.offers) return;
-    const offers = Array.isArray(entity.offers) ? entity.offers : [entity.offers];
-    for (const offer of offers) {
-      if (offer.price === undefined || offer.price === null || offer.price === '') {
-        this.errors.push(`[Product -> Offer] Missing 'price' property`);
+  checkReference(id) {
+    if (!this.entityMap.has(id)) {
+      this.errors.push(`Dangling @id reference: '${id}' is referenced, but no entity with that @id is defined on this page.`);
+    }
+  }
+
+  resolve(value) {
+    return isReference(value) ? this.entityMap.get(value['@id']) : value;
+  }
+
+  validateEntity(entity) {
+    const types = typesOf(entity);
+    if (types.length === 0) {
+      this.errors.push(`Invalid '@type' value: ${JSON.stringify(entity['@type'])}`);
+      return;
+    }
+
+    for (const type of types) {
+      this.checkFields(entity, type, GOOGLE_REQUIRED_FIELDS[type], 'required by Google', this.errors);
+      this.checkFields(entity, type, HARNESS_REQUIRED_FIELDS[type], 'required by the harness', this.errors);
+      this.checkFields(entity, type, GOOGLE_RECOMMENDED_FIELDS[type], 'recommended by Google', this.warnings);
+
+      if (type === 'Product') {
+        this.validateProduct(entity);
       }
-      if (!offer.priceCurrency) {
-        this.errors.push(`[Product -> Offer] Missing 'priceCurrency' property (e.g. USD, EUR)`);
+      if (type === 'BreadcrumbList') {
+        this.validateBreadcrumbItems(entity);
+      }
+      if (type === 'FAQPage') {
+        this.warnings.push('[FAQPage] FAQ rich results are no longer shown in Google Search (since May 7, 2026): this markup earns no rich result.');
+      }
+    }
+  }
+
+  checkFields(entity, type, fields, requirement, target) {
+    for (const field of fields || []) {
+      if (!isPresent(entity[field])) {
+        target.push(`[${type}] Missing property ${requirement}: '${field}'`);
+      }
+    }
+  }
+
+  validateProduct(entity) {
+    if (!['offers', 'review', 'aggregateRating'].some((field) => isPresent(entity[field]))) {
+      this.errors.push(`[Product] Missing property required by Google: one of 'offers', 'review' or 'aggregateRating'`);
+    }
+    if (!isPresent(entity.offers)) {
+      return;
+    }
+
+    for (const raw of asArray(entity.offers)) {
+      if (isReference(raw) && !this.entityMap.has(raw['@id'])) {
+        continue; // Reported as a dangling reference
+      }
+      const offer = this.resolve(raw);
+      if (!isObject(offer)) {
+        this.errors.push(`[Product -> Offer] Invalid offer: ${JSON.stringify(raw)}`);
+        continue;
+      }
+      const specification = isObject(offer.priceSpecification) ? offer.priceSpecification : {};
+      if (typesOf(offer).includes('AggregateOffer')) {
+        if (!isPresent(offer.lowPrice)) {
+          this.errors.push(`[Product -> AggregateOffer] Missing 'lowPrice' property required by Google`);
+        }
+      } else if (!isPresent(offer.price) && !isPresent(specification.price)) {
+        this.errors.push(`[Product -> Offer] Missing 'price' property required by Google (or priceSpecification.price)`);
+      }
+      if (!isPresent(offer.priceCurrency) && !isPresent(specification.priceCurrency)) {
+        this.warnings.push(`[Product -> Offer] Missing 'priceCurrency' (e.g. USD, EUR): required for Google merchant listings`);
       }
     }
   }
 
   validateBreadcrumbItems(entity) {
-    if (!Array.isArray(entity.itemListElement)) return;
-    entity.itemListElement.forEach((item, idx) => {
-      if (item.position === undefined) {
-        this.errors.push(`[BreadcrumbList item #${idx + 1}] Missing 'position'`);
-      }
-      if (!item.name) {
-        this.warnings.push(`[BreadcrumbList item #${idx + 1}] Missing 'name'`);
-      }
-    });
-  }
-
-  validateEntity(entity) {
-    if (!entity || !entity['@type']) {
-      this.errors.push(`Entity is missing required '@type' property: ${JSON.stringify(entity).slice(0, 80)}...`);
+    if (!isPresent(entity.itemListElement)) {
       return;
     }
-
-    const type = entity['@type'];
-    this.validateRequiredFields(entity, type);
-
-    if (type === 'Product') {
-      this.validateProductOffers(entity);
+    const items = asArray(entity.itemListElement);
+    if (items.length < 2) {
+      this.warnings.push('[BreadcrumbList] Google recommends at least two ListItem entries');
     }
-
-    if (type === 'BreadcrumbList') {
-      this.validateBreadcrumbItems(entity);
-    }
-
-    this.checkReferences(entity);
-  }
-
-  validateReferenceNode(val) {
-    if (val && typeof val === 'object' && val['@id'] && Object.keys(val).length === 1) {
-      const refId = val['@id'];
-      if (!this.entityMap.has(refId) && !refId.startsWith('http://') && !refId.startsWith('https://')) {
-        this.warnings.push(`Dangling @id reference: entity references '${refId}', but no entity with that @id exists in the graph.`);
+    items.forEach((raw, idx) => {
+      const label = `[BreadcrumbList item #${idx + 1}]`;
+      const item = this.resolve(raw);
+      if (!isObject(item)) {
+        this.errors.push(`${label} Invalid ListItem: ${JSON.stringify(raw)}`);
+        return;
       }
-      return true;
-    }
-    return false;
-  }
-
-  checkReferences(obj) {
-    if (!obj || typeof obj !== 'object') return;
-
-    for (const [key, val] of Object.entries(obj)) {
-      if (key === '@id') continue;
-      if (!this.validateReferenceNode(val) && val && typeof val === 'object') {
-        this.checkReferences(val);
+      if (!isPresent(item.position)) {
+        this.errors.push(`${label} Missing 'position' required by Google`);
       }
-    }
+      // Google: only the last breadcrumb may omit 'item'; 'name' may come from an item Thing
+      if (!isPresent(item.item) && idx < items.length - 1) {
+        this.errors.push(`${label} Missing 'item' required by Google (only the last item may omit it)`);
+      }
+      const target = this.resolve(item.item);
+      if (!isPresent(item.name) && !(isObject(target) && isPresent(target.name))) {
+        this.errors.push(`${label} Missing 'name' required by Google`);
+      }
+    });
   }
 
   result() {
@@ -169,67 +262,72 @@ class SchemaValidator {
 function runSelfTest() {
   console.log('\x1b[36mRunning Schema Graph Validator self-tests...\x1b[0m');
   const validator = new SchemaValidator();
-
-  const validGraph = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": "https://example.com/#organization",
-        "name": "Genisoft",
-        "url": "https://example.com"
-      },
-      {
-        "@type": "WebSite",
-        "@id": "https://example.com/#website",
-        "url": "https://example.com",
-        "name": "Genisoft Agency",
-        "publisher": { "@id": "https://example.com/#organization" }
-      }
-    ]
+  let failures = 0;
+  const expect = (label, condition, result) => {
+    if (condition) {
+      console.log(`  \x1b[32m✔\x1b[0m ${label}`);
+      return;
+    }
+    failures++;
+    console.error(`  \x1b[31m✘ ${label}\x1b[0m`, JSON.stringify(result));
   };
+  const graph = (...entities) => ({ '@context': 'https://schema.org', '@graph': entities });
+  const organization = { '@type': 'Organization', '@id': 'https://example.com/#organization', name: 'Genisoft', url: 'https://example.com' };
 
-  const res1 = validator.validate(validGraph);
-  if (!res1.valid || res1.warnings.length > 0) {
-    console.error('\x1b[31mFAIL: Valid graph flagged with errors/warnings\x1b[0m', res1);
+  let res = validator.validate(graph(organization, {
+    '@type': 'WebSite', '@id': 'https://example.com/#website', url: 'https://example.com', name: 'Genisoft Agency',
+    publisher: { '@id': 'https://example.com/#organization' }
+  }));
+  expect('Valid interconnected graph passed.', res.valid && res.warnings.length === 0, res);
+
+  res = validator.validate({ '@context': 'https://schema.org', '@type': 'Product', name: 'Custom SEO Audit', offers: { '@type': 'Offer', priceCurrency: 'EUR' } });
+  expect('Missing price in Product offer correctly caught.', !res.valid && res.errors.some((e) => e.includes("'price'")), res);
+
+  res = validator.validate(graph({
+    '@type': 'Article', '@id': 'https://example.com/post/#article', headline: 'WordPress Harness Engineering',
+    image: 'https://example.com/cover.jpg', datePublished: '2026-10-19', author: { '@id': '#missing-author' }
+  }));
+  expect('Dangling @id entity reference caught.', !res.valid && res.errors.some((e) => e.includes('Dangling @id reference')), res);
+
+  res = validator.validate(graph({ '@type': 'WebSite', '@id': 'https://example.com/#website', name: 'X', url: 'https://example.com', publisher: { '@id': 'https://example.com/#organization' } }));
+  expect('Dangling absolute @id reference caught.', !res.valid && res.errors.some((e) => e.includes('https://example.com/#organization')), res);
+
+  res = validator.validate(graph({ '@type': ['Organization', 'LocalBusiness'], '@id': 'https://example.com/#shop' }));
+  expect('@type arrays are validated for every type.', res.errors.some((e) => e.includes('[Organization]')) && res.errors.some((e) => e.includes('[LocalBusiness]')), res);
+
+  res = validator.validate(graph({ '@type': 'WebPage', '@id': 'https://example.com/p/#webpage', mainEntity: { '@type': 'Product', name: 'P', offers: { '@type': 'Offer' } } }));
+  expect('Nested Product is validated.', !res.valid && res.errors.some((e) => e.includes("'price'")), res);
+
+  res = validator.validate(graph({ '@type': 'Organization', name: 'X', url: 'https://example.com' }));
+  expect('@graph entity without @id caught.', !res.valid && res.errors.some((e) => e.includes("'@id'")), res);
+
+  res = validator.validate(graph(
+    { '@type': 'Product', '@id': 'https://example.com/p/#product', name: 'P', offers: [null] },
+    { '@type': 'BreadcrumbList', '@id': 'https://example.com/p/#breadcrumb', itemListElement: [null] }
+  ));
+  expect('Null offers and list items are reported, not crashed on.', !res.valid && res.errors.some((e) => e.includes('Invalid offer')) && res.errors.some((e) => e.includes('Invalid ListItem')), res);
+
+  res = validator.validate(graph(
+    { '@type': 'Product', '@id': 'https://example.com/p/#product', name: 'P', aggregateRating: { '@type': 'AggregateRating', ratingValue: 4.8, reviewCount: 12 } },
+    { '@type': 'Article', '@id': 'https://example.com/post/#article', headline: 'H', datePublished: '2026-10-19', author: { '@type': 'Person', name: 'A' } },
+    { '@type': 'BreadcrumbList', '@id': 'https://example.com/p/#breadcrumb', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://example.com/' },
+      { '@type': 'ListItem', position: 2, name: 'P' }
+    ] }
+  ));
+  expect('Google-valid markup passes (aggregateRating-only Product, Article without image, last breadcrumb without item).', res.valid && res.warnings.some((w) => w.includes("'image'")), res);
+
+  const blocks = extractJsonLdBlocks(
+    '<script type="application/ld+json" class="yoast-schema-graph">{"@type":"WebSite","name":"X","url":"https://example.com"}</script>' +
+    '<script type=\'application/ld+json\'>{"@type":"Product","name":"P","offers":{"@type":"Offer"}}</script>'
+  );
+  res = validator.validateDocuments(blocks);
+  expect('Every JSON-LD block of a page is extracted and validated.', blocks.length === 2 && !res.valid, res);
+
+  if (failures > 0) {
+    console.error(`\x1b[31m${failures} Schema Graph Validator self-test(s) FAILED.\x1b[0m\n`);
     process.exit(1);
   }
-  console.log('  \x1b[32m✔\x1b[0m Valid interconnected graph passed.');
-
-  const invalidProduct = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": "Custom SEO Audit",
-    "offers": { "@type": "Offer", "priceCurrency": "EUR" }
-  };
-
-  const res2 = validator.validate(invalidProduct);
-  if (res2.valid || !res2.errors.some(e => e.includes("'price'"))) {
-    console.error('\x1b[31mFAIL: Invalid product was not flagged for missing price\x1b[0m', res2);
-    process.exit(1);
-  }
-  console.log('  \x1b[32m✔\x1b[0m Missing price in Product offer correctly caught.');
-
-  const danglingRef = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Article",
-        "headline": "WordPress Harness Engineering",
-        "image": "https://example.com/cover.jpg",
-        "datePublished": "2026-10-19",
-        "author": { "@id": "#missing-author" }
-      }
-    ]
-  };
-
-  const res3 = validator.validate(danglingRef);
-  if (!res3.warnings.some(w => w.includes('Dangling @id reference'))) {
-    console.error('\x1b[31mFAIL: Dangling @id was not detected\x1b[0m', res3);
-    process.exit(1);
-  }
-  console.log('  \x1b[32m✔\x1b[0m Dangling @id entity reference caught.');
-
   console.log('\x1b[32mAll Schema Graph Validator self-tests passed successfully!\x1b[0m\n');
 }
 
@@ -243,26 +341,25 @@ if (require.main === module) {
 
   const target = args[0];
   if (!target) {
-    console.log('Usage: node schema-graph-validator.js <file.json|file.html> [--test]');
-    process.exit(0);
+    // A gate run without a file must never count as a pass
+    console.error('Usage: node schema-graph-validator.js <file.json|file.html> [--test]');
+    process.exit(2);
   }
 
   try {
-    let rawContent = fs.readFileSync(target, 'utf8');
+    let documents = [fs.readFileSync(target, 'utf8')];
     if (target.endsWith('.html') || target.endsWith('.php')) {
-      const match = rawContent.match(/<script\s+type=["']application\/ld\+json["']>([\s\S]*?)<\/script>/i);
-      if (match) {
-        rawContent = match[1];
-      } else {
+      documents = extractJsonLdBlocks(documents[0]);
+      if (documents.length === 0) {
         console.error('\x1b[31mError: No <script type="application/ld+json"> tag found in HTML file.\x1b[0m');
         process.exit(1);
       }
     }
 
     const validator = new SchemaValidator();
-    const result = validator.validate(rawContent);
+    const result = validator.validateDocuments(documents);
 
-    console.log(`Indexed Entities: ${result.indexedEntities}`);
+    console.log(`JSON-LD blocks: ${documents.length} | Indexed Entities: ${result.indexedEntities}`);
     if (result.warnings.length > 0) {
       console.log('\x1b[33mWarnings:\x1b[0m');
       result.warnings.forEach(w => console.log(`  - ${w}`));
@@ -282,4 +379,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { SchemaValidator };
+module.exports = { SchemaValidator, extractJsonLdBlocks };

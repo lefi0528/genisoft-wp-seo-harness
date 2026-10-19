@@ -1,6 +1,6 @@
 {
   "name": "genisoft/wp-seo-harness",
-  "description": "Autonomous WordPress Technical SEO & Core Web Vitals Engineering Harness for AI Coding Agents",
+  "description": "Autonomous WordPress Technical SEO Engineering Harness for AI Coding Agents",
   "type": "library",
   "license": "MIT",
   "authors": [
@@ -14,12 +14,12 @@
     "php": ">=8.1"
   },
   "autoload": {
-    "psr-4": {
-      "Genisoft\\WpSeoHarness\\": "tools/"
-    }
+    "classmap": [
+      "tools/verify-seo-safety.php"
+    ]
   },
   "scripts": {
-    "test": "node tools/schema-graph-validator.js --test && php tools/verify-seo-safety.php --self-test",
+    "test": "node tools/schema-graph-validator.js --test && node tests/schema-validator.test.js && php tools/verify-seo-safety.php --self-test && php tests/run-php-tests.php && php tests/guard.test.php && bash tests/lint-php.test.sh && bash tests/audit-harness.test.sh",
     "audit": "bash tools/audit-harness.sh"
   }
 }

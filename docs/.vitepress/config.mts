@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress';
 
 export default defineConfig({
   title: "Genisoft WP SEO Harness",
-  description: "Autonomous WordPress Technical SEO & Core Web Vitals Engineering Harness for AI Coding Agents",
+  description: "Autonomous WordPress Technical SEO Engineering Harness for AI Coding Agents",
   base: "/genisoft-wp-seo-harness/",
   themeConfig: {
     nav: [
@@ -27,7 +27,7 @@ export default defineConfig({
             { text: "L07: Scope Control & Atomic Tasks", link: "/lectures/lecture-07-scope-control-and-atomic-tasks" },
             { text: "L08: Verification Gates & Evidence", link: "/lectures/lecture-08-verification-gates-and-evidence" },
             { text: "L09: Connected Schema Knowledge Graph", link: "/lectures/lecture-09-connected-schema-knowledge-graphs" },
-            { text: "L10: Runtime Guards & Active Rollback", link: "/lectures/lecture-10-runtime-safety-guards-and-rollback" }
+            { text: "L10: Runtime Safety Guards", link: "/lectures/lecture-10-runtime-safety-guards-and-rollback" }
           ]
         }
       ],

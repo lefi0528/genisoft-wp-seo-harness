@@ -27,6 +27,6 @@ The Genisoft WP SEO Harness course is divided into **10 progressive lectures**. 
 | **L05** | [Multi-Session State Persistence](./lecture-05-multi-session-state-persistence.md) | Beating context degradation with `seo_tasks.json` and `progress.md`. |
 | **L06** | [Session Init & WP-CLI](./lecture-06-session-initialization-and-wp-cli.md) | Establishing a clean environment baseline before every agent run. |
 | **L07** | [Scope Control & Atomic Tasks](./lecture-07-scope-control-and-atomic-tasks.md) | Constraining the agent to one feature at a time with strict DoD. |
-| **L08** | [Verification Gates & Evidence](./lecture-08-verification-gates-and-evidence.md) | Enforcing `php -l`, PHPCS, and custom security scanners before commit. |
+| **L08** | [Verification Gates & Evidence](./lecture-08-verification-gates-and-evidence.md) | Enforcing `php -l` and the harness's own scanners before commit. |
 | **L09** | [Connected Schema Knowledge Graphs](./lecture-09-connected-schema-knowledge-graphs.md) | Building interconnected `@graph` entities with `@id` validation. |
-| **L10** | [Runtime Guards & Active Rollback](./lecture-10-runtime-safety-guards-and-rollback.md) | Using Must-Use plugins (`wp-seo-guard.php`) to intercept runtime failures. |
+| **L10** | [Runtime Safety Guards](./lecture-10-runtime-safety-guards-and-rollback.md) | Using Must-Use plugins (`wp-seo-guard.php`) to intercept runtime failures. |

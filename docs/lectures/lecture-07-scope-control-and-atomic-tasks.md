@@ -17,6 +17,6 @@ The Genisoft Harness enforces a strict operational rule:
 ### Definition of Done (DoD)
 An atomic task cannot be closed until all four criteria are fulfilled:
 1. `php -l` exits code 0 with zero syntax errors.
-2. `php tools/verify-seo-safety.php` exits code 0 with zero critical violations.
-3. Relevant Schema entities pass `node tools/schema-graph-validator.js`.
+2. `php tools/verify-seo-safety.php <modified files>` exits code 0 with zero critical violations.
+3. Relevant Schema entities pass `node tools/schema-graph-validator.js <rendered JSON-LD file>`.
 4. Evidence string is recorded in both `seo_tasks.json` and `progress.md`.

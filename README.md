@@ -1,14 +1,13 @@
 # Genisoft WordPress SEO Harness 🛡️⚡
-> **Autonomous Technical SEO & Core Web Vitals Engineering Harness for AI Coding Agents**  
+> **Autonomous WordPress Technical SEO Engineering Harness for AI Coding Agents**  
 > A complete, project-based curriculum and runtime framework for Claude Code, OpenAI Codex, Antigravity, and Cursor.  
 > Conceived & Engineered by **Abdelmonem Lefi (Genisoft)**.
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759B?style=for-the-badge&logo=wordpress&logoColor=white)](https://wordpress.org/)
 [![PHP](https://img.shields.io/badge/PHP-8.1%20--%208.3-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
-[![AI Agents Ready](https://img.shields.io/badge/AI%20Agents-Claude%20Code%20%7C%20Codex%20%7C%20Antigravity-8A2BE2?style=for-the-badge)](https://github.com/walkinglabs/learn-harness-engineering)
+[![AI Agents Ready](https://img.shields.io/badge/AI%20Agents-Claude%20Code%20%7C%20Codex%20%7C%20Antigravity-8A2BE2?style=for-the-badge)](https://lefi0528.github.io/genisoft-wp-seo-harness/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-success?style=for-the-badge)](LICENSE)
 [![Schema.org Validated](https://img.shields.io/badge/Schema.org-%40graph%20Validated-orange?style=for-the-badge)](https://schema.org)
-[![Fiverr Pro Vetted](https://img.shields.io/badge/Fiverr%20Pro-Vetted%20Engineering-00B22D?style=for-the-badge)](https://github.com/lefi0528)
 
 ---
 
@@ -20,13 +19,13 @@ Large Language Models (LLMs) are brilliant at writing individual functions, but 
 - 🧩 **Fragmented Schema.org**: Disjointed JSON-LD snippets with broken or dangling `@id` entity references that fail Google Rich Results testing.
 - 💥 **Production Crashes (WSOD)**: Single syntax errors or hook collisions in `functions.php` triggering Error 500.
 
-**The model is smart. The Genisoft Harness makes it 100% reliable.**
+**The model is smart. The Genisoft Harness makes its work verifiable before it reaches production.**
 
 ---
 
 ## 📚 Complete Curriculum & Architecture
 
-This repository is both a **production runtime framework** and a **complete 10-lecture / 4-project curriculum** inspired by the frontier research of Anthropic, OpenAI, and Martin Fowler.
+This repository is both a **production runtime framework** and a **complete 10-lecture / 4-project curriculum** inspired by published harness-engineering work from Anthropic and OpenAI ([references](docs/resources/reference.md)).
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -62,7 +61,7 @@ Full texts and interactive documentation available in `docs/lectures/`:
 - **[L07: Scope Control & Atomic Tasks](docs/lectures/lecture-07-scope-control-and-atomic-tasks.md)** — Enforcing the 1-task-per-turn invariant and the Definition of Done.
 - **[L08: Verification Gates & Evidence](docs/lectures/lecture-08-verification-gates-and-evidence.md)** — Replacing subjective self-assessment with deterministic CLI proof.
 - **[L09: Connected Schema Knowledge Graphs](docs/lectures/lecture-09-connected-schema-knowledge-graphs.md)** — Constructing unified Google-compliant `@graph` networks with `@id` cross-referencing.
-- **[L10: Runtime Guards & Active Rollback](docs/lectures/lecture-10-runtime-safety-guards-and-rollback.md)** — Deploying Must-Use plugins (`wp-seo-guard.php`) to intercept live faults.
+- **[L10: Runtime Safety Guards](docs/lectures/lecture-10-runtime-safety-guards-and-rollback.md)** — Deploying a Must-Use plugin (`wp-seo-guard.php`) that contains the most common live faults.
 
 ---
 
@@ -83,12 +82,12 @@ Each project includes real, runnable code fixtures in `projects/`:
 
 | Dimension | Unharnessed Agent (Prompt-Only) | With Genisoft WP SEO Harness |
 | :--- | :--- | :--- |
-| **Indexing Safety** | High risk of accidental `noindex` on front page | **100% Protected**: Runtime guard intercept + CLI pre-flight check |
-| **Canonical URLs** | Hallucinates relative or mixed HTTP/HTTPS links | **Enforced**: Strict HTTPS, trailing slash normalization, absolute URLs |
-| **Schema.org Quality** | Fragmented Microdata with missing required fields | **Enterprise Knowledge Graph**: Fully connected `@graph` with `@id` validation |
-| **Multi-Session Work** | Forgets prior work, re-does code, loses context | **Zero Memory Loss**: `seo_tasks.json` + `progress.md` state machine |
+| **Indexing Safety** | High risk of accidental `noindex` on front page | **Guarded**: pre-commit scanner + runtime homepage guard |
+| **Canonical URLs** | Hallucinates relative or mixed HTTP/HTTPS links | **Normalized**: absolute HTTPS URLs, trailing slash matching the permalink structure |
+| **Schema.org Quality** | Fragmented Microdata with missing required fields | **Connected `@graph`**: Google-required properties checked, every `@id` reference must resolve |
+| **Multi-Session Work** | Forgets prior work, re-does code, loses context | **Persistent State**: `seo_tasks.json` + `progress.md` carried across sessions |
 | **Definition of Done** | Agent declares "Done!" while code fails silently | **Evidence-Based**: Must pass `verify-seo-safety.php` and `schema-graph-validator.js` |
-| **WordPress Stability** | Edits parent themes, risks fatal Error 500 (WSOD) | **Sanctuarized**: Restricts work to child themes / plugins with syntax dry-run |
+| **WordPress Stability** | Edits parent themes, risks fatal Error 500 (WSOD) | **Contained**: `AGENTS.md` restricts work to child themes / plugins, `php -l` gate before commit |
 
 ---
 
@@ -116,7 +115,7 @@ cp tools/wp-seo-guard.php /path/to/wordpress/wp-content/mu-plugins/
 
 ### 4. Run the Verification Suite
 ```bash
-npm test
+npm run test:all   # Node.js + PHP 8.1+ (self-tests and regression tests)
 bash tools/audit-harness.sh
 ```
 
@@ -124,10 +123,11 @@ bash tools/audit-harness.sh
 
 ## 🛠️ Built-in Tool Suite
 
-1. **`schema-graph-validator.js`**: Node.js CLI tool validating Schema.org JSON-LD graphs against Google Search Central Rich Result specs (`WebSite`, `Organization`, `Product`, `Article`, `BreadcrumbList`, `FAQPage`).
-2. **`verify-seo-safety.php`**: Standalone PHP scanner flagging unconditional `noindex` filters, relative canonicals, and unescaped dynamic meta.
-3. **`wp-seo-guard.php`**: Must-Use Plugin (`mu-plugin`) that intercepts and neutralizes dangerous runtime actions live.
-4. **`audit-harness.sh`**: Zero-dependency shell audit that rates any WordPress repository from 0 to 100 based on the 5 harness subsystems.
+1. **`schema-graph-validator.js`**: Node.js CLI validating JSON-LD against the properties Google Search Central documents as required (`Product`, `Offer`, `BreadcrumbList`, `LocalBusiness`) or recommended (`Article`), plus the harness graph rules: every `@graph` entity has an `@id` and every `@id` reference resolves. Reads every JSON-LD block of an HTML page.
+2. **`verify-seo-safety.php`**: Standalone, tokenizer-based PHP scanner flagging any `noindex` (wp_robots, X-Robots-Tag, robots meta) not restricted to narrow contexts, HTTP/relative canonicals, and unescaped dynamic output in meta tags.
+3. **`wp-seo-guard.php`**: Must-Use Plugin (`mu-plugin`) that neutralizes accidental homepage `noindex` (staging excluded), normalizes canonicals via `get_canonical_url`, and halts self-redirect loops.
+4. **`audit-harness.sh`**: Shell audit that rates any WordPress repository from 0 to 100 on the 5 harness subsystems, running the verification tools against known bugs (requires PHP and Node.js).
+5. **`lint-php.sh`**: Runs `php -l` on every PHP file and fails on any syntax error (used by CI).
 
 ---
 
@@ -137,8 +137,14 @@ Created by **Abdelmonem Lefi (Genisoft)**
 *Senior Full-Stack & Technical SEO Engineer | Agentic AI Specialist*
 
 - 🌐 **Portfolio & Case Studies**: [lefi-abdelmonem.com](https://lefi-abdelmonem.com)
-- 💼 **Fiverr Pro**: Verified Elite Web Engineering & Technical SEO
+- 💼 **Fiverr**: [genisoft0528](https://www.fiverr.com/genisoft0528) — Web engineering & technical SEO services
 - 🐙 **GitHub**: [@lefi0528](https://github.com/lefi0528)
+
+---
+
+## 🙏 Acknowledgements
+
+The curriculum structure (lectures + hands-on projects) is adapted from [walkinglabs/learn-harness-engineering](https://github.com/walkinglabs/learn-harness-engineering) (MIT License), applied here to WordPress technical SEO.
 
 ---
 

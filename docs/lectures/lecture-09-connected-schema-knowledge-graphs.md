@@ -13,7 +13,7 @@ Search engines struggle to connect these disjointed entities into a unified Know
 
 ## The Unified `@graph` Standard
 
-Google Search Central explicitly favors interconnected entities within a single JSON-LD block:
+Google recommends JSON-LD for structured data. Connecting entities through stable `@id` references inside one `@graph` keeps them consistent across templates and states how each page's entities relate:
 
 ```json
 {
@@ -28,6 +28,7 @@ Google Search Central explicitly favors interconnected entities within a single 
     {
       "@type": "WebSite",
       "@id": "https://example.com/#website",
+      "name": "Acme Agency",
       "url": "https://example.com/",
       "publisher": { "@id": "https://example.com/#organization" }
     },

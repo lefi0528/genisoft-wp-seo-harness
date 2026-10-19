@@ -24,7 +24,7 @@ The Genisoft Harness solves this through two files persisted to the local filesy
   "phase": "Schema.org Architecture",
   "title": "Implement Connected Knowledge Graph (@graph)",
   "status": "completed",
-  "verification_gate": "node tools/schema-graph-validator.js",
+  "verification_gate": "node tools/schema-graph-validator.js build/schema-home.json",
   "evidence": "3/3 entities validated with 0 dangling @id references."
 }
 ```
