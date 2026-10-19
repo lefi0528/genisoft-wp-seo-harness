@@ -52,6 +52,7 @@ jobs:
         php tests/run-php-tests.php
         php tests/guard.test.php
         bash tests/lint-php.test.sh
+        bash tests/audit-harness.test.sh
 
     - name: Run Harness 100-Point Audit
       run: bash tools/audit-harness.sh

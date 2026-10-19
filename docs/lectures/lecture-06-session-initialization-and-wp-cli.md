@@ -8,25 +8,34 @@ Never allow an AI agent to write code in an unverified environment. If the local
 
 ## The `init.sh` Bootstrap Sequence
 
-Every agent session must start by executing `bash init.sh`:
+Every agent session must start by executing `bash init.sh`. The repository's script does the following:
 
 ```bash
-#!/usr/bin/env bash
-set -e
+set -euo pipefail
+cd "$(dirname "$0")"
 
-# 1. Verify Node.js runtime for Schema validation
-node -v >/dev/null 2>&1 || { echo "Node.js required"; exit 1; }
+# 1. Node.js 18+ for Schema validation
+if ! command -v node >/dev/null 2>&1 || ! node -e 'process.exit(parseInt(process.versions.node, 10) >= 18 ? 0 : 1)'; then
+    echo "  ✘ Node.js 18+ is required to run schema-graph-validator.js." >&2
+    exit 1
+fi
 
-# 2. Verify PHP CLI runtime for safety scanning
-php -v >/dev/null 2>&1 || { echo "PHP CLI required"; exit 1; }
+# 2. PHP 8.1+ CLI for safety scanning
+if ! command -v php >/dev/null 2>&1 || ! php -r 'exit(PHP_VERSION_ID >= 80100 ? 0 : 1);'; then
+    echo "  ✘ PHP 8.1+ CLI is required to run verify-seo-safety.php." >&2
+    exit 1
+fi
 
-# 3. Run self-tests on verification tools
+# 3. Self-tests of the verification tools
 node tools/schema-graph-validator.js --test
 php tools/verify-seo-safety.php --self-test
 
-# 4. Check WordPress health (if WP-CLI available)
-if command -v wp >/dev/null 2>&1; then
-    wp core is-installed || { echo "WP not installed"; exit 1; }
+# 4. WordPress health, when run from a WordPress root with WP-CLI available
+if [[ -f wp-config.php ]] && command -v wp >/dev/null 2>&1; then
+    if ! wp core is-installed >/dev/null 2>&1; then
+        echo "  ✘ wp-config.php found but WordPress is not installed (wp core is-installed failed)." >&2
+        exit 1
+    fi
 fi
 ```
 
