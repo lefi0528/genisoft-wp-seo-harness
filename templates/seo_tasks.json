@@ -18,7 +18,7 @@
       "title": "Implement Connected Knowledge Graph (@graph)",
       "description": "Construct single connected JSON-LD graph linking WebSite, Organization, Author, and BreadcrumbList via canonical @id URIs.",
       "status": "pending",
-      "verification_gate": "node tools/schema-graph-validator.js",
+      "verification_gate": "node tools/schema-graph-validator.js <path/to/rendered-json-ld.json>",
       "evidence": null
     },
     {
@@ -27,7 +27,7 @@
       "title": "Configure Dynamic wp_robots Directives",
       "description": "Implement max-snippet:-1, max-image-preview:large, max-video-preview:-1 while safeguarding is_front_page() against noindex.",
       "status": "pending",
-      "verification_gate": "php tools/verify-seo-safety.php",
+      "verification_gate": "php tools/verify-seo-safety.php <files-modified-in-this-task>",
       "evidence": null
     },
     {
@@ -36,7 +36,7 @@
       "title": "Normalize Canonical URLs Across Pagination & Taxonomies",
       "description": "Ensure self-referential HTTPS canonicals, trailing-slash normalization, and pagination handling on archive templates.",
       "status": "pending",
-      "verification_gate": "php tools/verify-seo-safety.php",
+      "verification_gate": "php tools/verify-seo-safety.php <files-modified-in-this-task>",
       "evidence": null
     },
     {
@@ -45,7 +45,7 @@
       "title": "Implement LCP Resource Preload & Font-Display Swap",
       "description": "Hook into wp_head to inject fetchpriority='high' and link rel='preload' for above-the-fold hero image and primary web fonts.",
       "status": "pending",
-      "verification_gate": "php -l",
+      "verification_gate": "php -l <files-modified-in-this-task>",
       "evidence": null
     },
     {

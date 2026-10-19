@@ -31,8 +31,10 @@ php tools/verify-seo-safety.php projects/project-01-baseline-vs-harnessed/starte
 === Genisoft WordPress SEO Safety Report ===
 Files scanned: 1
 
-CRITICAL Violations (1):
-  [FAIL] Unconditional 'noindex' detected in wp_robots filter. Risk of de-indexing entire site.
+CRITICAL Violations (3):
+  [FAIL] [projects/project-01-baseline-vs-harnessed/starter/vulnerable-seo-functions.php] [SEO-NOINDEX] line 7: 'noindex' in wp_robots filter is only guarded by broad or inverted condition(s) `!is_single()`. Risk of de-indexing whole sections: restrict it to is_search(), is_404() or specific IDs/slugs.
+  [FAIL] [projects/project-01-baseline-vs-harnessed/starter/vulnerable-seo-functions.php] [SEO-CANONICAL-HTTP] line 13: Insecure HTTP canonical URL detected. Canonical tags must always use HTTPS.
+  [FAIL] [projects/project-01-baseline-vs-harnessed/starter/vulnerable-seo-functions.php] [SEO-META-UNESCAPED] line 16: Unescaped dynamic output `$_GET['search']` in the 'content' attribute of a meta tag. Must wrap with esc_attr() (esc_url() for URLs).
 
 ❌ Safety verification FAILED. Aborting agent session to prevent production damage.
 ```

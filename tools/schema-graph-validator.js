@@ -243,8 +243,9 @@ if (require.main === module) {
 
   const target = args[0];
   if (!target) {
-    console.log('Usage: node schema-graph-validator.js <file.json|file.html> [--test]');
-    process.exit(0);
+    // A gate run without a file must never count as a pass
+    console.error('Usage: node schema-graph-validator.js <file.json|file.html> [--test]');
+    process.exit(2);
   }
 
   try {
