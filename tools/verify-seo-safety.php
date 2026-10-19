@@ -35,8 +35,14 @@ class SeoSafetyVerifier {
         'is_trackback', 'is_robots', 'is_date', 'is_year', 'is_month', 'is_day', 'is_time', 'is_author', 'is_tag',
         'is_customize_preview', 'is_cart', 'is_checkout', 'is_account_page', 'is_wc_endpoint_url',
         'get_post_meta', 'get_term_meta', 'get_user_meta', 'get_field', 'get_query_var', 'has_term', 'has_tag',
-        'has_category', 'in_array',
+        'has_category',
     ];
+
+    // Values that identify the requested URL: comparing them with a literal targets specific URLs
+    private const URL_SELECTOR_FUNCTIONS = [
+        'get_the_id', 'get_queried_object_id', 'get_post_field', 'get_page_template_slug', 'get_post_type', 'get_query_var',
+    ];
+    private const URL_SELECTOR_PROPERTIES = ['id', 'post_name', 'post_type', 'slug', 'term_id'];
 
     // Conditions that are narrow only when they target specific posts, pages, terms or templates
     private const NARROW_WITH_ARGUMENTS = [
@@ -420,9 +426,13 @@ class SeoSafetyVerifier {
     }
 
     private function isNarrowAtom(array $range): bool {
-        // Equality with a specific value (get_the_ID() === 42) targets specific URLs
-        if ($this->findTopLevel($range, [T_IS_IDENTICAL, T_IS_EQUAL]) !== null) {
-            return true;
+        // Equality is narrow only between a URL selector and a literal: get_the_ID() === 42, not is_admin() === false
+        $equality = $this->findTopLevel($range, [T_IS_IDENTICAL, T_IS_EQUAL]);
+        if ($equality !== null) {
+            $left = [$range[0], $equality];
+            $right = [$equality + 1, $range[1]];
+            return ($this->isUrlSelector($left) && $this->isIdentifierLiteral($right))
+                || ($this->isUrlSelector($right) && $this->isIdentifierLiteral($left));
         }
         $name = $this->callName($range[0]);
         if ($name === null || ($this->match[$range[0] + 1] ?? null) !== $range[1] - 1) {
@@ -431,8 +441,45 @@ class SeoSafetyVerifier {
         if (in_array($name, self::NARROW_CONDITIONS, true)) {
             return true;
         }
+        if ($name === 'in_array') {
+            $arguments = $this->splitTopLevel([$range[0] + 2, $range[1] - 1], [',']);
+            return $this->isUrlSelector($arguments[0]);
+        }
         $hasArguments = $range[1] - 1 > $range[0] + 2;
         return $hasArguments && in_array($name, self::NARROW_WITH_ARGUMENTS, true);
+    }
+
+    // get_the_ID(), get_post_field('post_name'), $post->ID, get_queried_object()->term_id...
+    private function isUrlSelector(array $range): bool {
+        $range = $this->stripParens($range);
+        if ($range[0] >= $range[1]) {
+            return false;
+        }
+        $name = $this->callName($range[0]);
+        if ($name !== null && ($this->match[$range[0] + 1] ?? null) === $range[1] - 1) {
+            return in_array($name, self::URL_SELECTOR_FUNCTIONS, true);
+        }
+        $property = $this->tokens[$range[1] - 1];
+        $arrow = $range[1] - $range[0] >= 3 ? $this->tokens[$range[1] - 2] : null;
+        return $arrow !== null && $arrow->is([T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR]) && $property->is(T_STRING)
+            && in_array(strtolower($property->text), self::URL_SELECTOR_PROPERTIES, true);
+    }
+
+    // 42, 'thank-you', THANK_YOU_PAGE_ID or Pages::THANK_YOU (never true/false/null)
+    private function isIdentifierLiteral(array $range): bool {
+        $range = $this->stripParens($range);
+        $length = $range[1] - $range[0];
+        $first = $this->tokens[$range[0]] ?? null;
+        if ($first === null || $length < 1) {
+            return false;
+        }
+        if ($length === 1) {
+            return $first->is(T_LNUMBER)
+                || ($first->is(T_CONSTANT_ENCAPSED_STRING) && $this->unquote($first->text) !== '')
+                || ($first->is(T_STRING) && !in_array(strtolower($first->text), ['true', 'false', 'null'], true));
+        }
+        return $length === 3 && $first->is([T_STRING, T_STATIC]) && $this->tokens[$range[0] + 1]->is(T_DOUBLE_COLON)
+            && $this->tokens[$range[0] + 2]->is(T_STRING);
     }
 
     /** @return array<array{0: array, 1: bool}> Conditions under which token $p runs, as [range, negated] pairs */

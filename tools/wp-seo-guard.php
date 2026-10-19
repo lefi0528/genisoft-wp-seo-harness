@@ -96,7 +96,8 @@ class WpSeoGuard {
 
         $scheme  = self::requestScheme();
         $origin  = $scheme . '://' . $_SERVER['HTTP_HOST'];
-        $target  = str_starts_with($location, '/') && !str_starts_with($location, '//') ? $origin . $location : $location;
+        // Resolve like a browser: //host/path keeps the request scheme, /path keeps the request origin
+        $target  = str_starts_with($location, '//') ? $scheme . ':' . $location : (str_starts_with($location, '/') ? $origin . $location : $location);
         $current = $origin . $_SERVER['REQUEST_URI'];
 
         if (self::normalizeUrl($target) !== self::normalizeUrl($current)) {
