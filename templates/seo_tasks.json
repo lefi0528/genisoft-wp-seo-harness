@@ -1,6 +1,6 @@
 {
   "project": "WordPress Technical SEO Audit & Hardening",
-  "harness_version": "1.0.0",
+  "harness_version": "1.1.0",
   "author": "Genisoft",
   "tasks": [
     {

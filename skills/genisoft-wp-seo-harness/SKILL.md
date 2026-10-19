@@ -1,6 +1,6 @@
 ---
 name: genisoft-wp-seo-harness
-description: Scaffold, audit, and enforce the Genisoft WordPress Technical SEO & Core Web Vitals Harness. Use when working on WordPress SEO tasks to prevent accidental de-indexing, canonical loops, schema errors, and PHP crashes during AI agent operations.
+description: Scaffold, audit, and enforce the Genisoft WordPress Technical SEO Harness. Use when working on WordPress SEO tasks to prevent accidental de-indexing, canonical loops, schema errors, and PHP crashes during AI agent operations.
 license: MIT
 ---
 

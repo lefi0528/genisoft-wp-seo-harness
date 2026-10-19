@@ -118,6 +118,7 @@ cp tools/wp-seo-guard.php /path/to/wordpress/wp-content/mu-plugins/
 ```bash
 npm run test:all   # Node.js + PHP 8.1+ (self-tests and regression tests)
 bash tools/audit-harness.sh
+npm run test:e2e   # Real WordPress (SQLite): checks the runtime guard over HTTP (network needed)
 ```
 
 ---
@@ -129,6 +130,9 @@ bash tools/audit-harness.sh
 3. **`wp-seo-guard.php`**: Must-Use Plugin (`mu-plugin`) that neutralizes accidental homepage `noindex` (staging excluded), normalizes canonicals via `get_canonical_url`, and halts self-redirect loops.
 4. **`audit-harness.sh`**: Shell audit that rates any WordPress repository from 0 to 100 on the 5 harness subsystems, running the verification tools against known bugs (requires PHP and Node.js).
 5. **`lint-php.sh`**: Runs `php -l` on every PHP file and fails on any syntax error (used by CI).
+6. **`tests/e2e/wordpress-e2e.sh`**: Installs the latest WordPress with SQLite, serves it with PHP's built-in server and checks `wp-seo-guard.php` and the example plugin on real HTTP responses (runs in CI).
+
+See the [CHANGELOG](CHANGELOG.md) for what changed in each version.
 
 ---
 

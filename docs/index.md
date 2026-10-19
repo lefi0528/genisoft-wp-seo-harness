@@ -31,7 +31,7 @@ features:
 
 **The model is smart. The harness makes it reliable.**
 
-When large language models like Claude 3.7 Sonnet, Opus 4.5, or GPT-5/Codex work on WordPress codebases, they suffer from three fundamental vulnerabilities:
+When large language models such as Claude, GPT/Codex or Gemini work on WordPress codebases, they run into three recurring problems:
 1. **Procedural Amnesia**: Without persistent external state, agents lose context between sessions, re-do work, or overwrite existing optimizations.
 2. **Hook Collisions**: WordPress filters (`wp_robots`, `get_canonical_url`, `template_redirect`) interact globally. An agent altering one filter without verification can de-index an entire website overnight.
 3. **Premature Victory**: Unharnessed agents declare "Done!" without running automated proof.
