@@ -19,7 +19,7 @@
     }
   },
   "scripts": {
-    "test": "node tools/schema-graph-validator.js --test && php tools/verify-seo-safety.php --self-test",
+    "test": "node tools/schema-graph-validator.js --test && node tests/schema-validator.test.js && php tools/verify-seo-safety.php --self-test && php tests/run-php-tests.php && php tests/guard.test.php && bash tests/lint-php.test.sh",
     "audit": "bash tools/audit-harness.sh"
   }
 }

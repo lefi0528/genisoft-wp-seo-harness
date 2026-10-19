@@ -2,8 +2,8 @@
 
 ### Key Verification Commands
 ```bash
-# Run full harness test suite
-npm test
+# Run full harness test suite (Node.js + PHP)
+npm run test:all
 
 # Run Schema.org validator
 node tools/schema-graph-validator.js <json-or-html-file>

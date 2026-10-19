@@ -37,14 +37,21 @@ jobs:
       run: composer validate --strict
 
     - name: PHP Syntax Linting
-      run: |
-        find tools/ examples/ projects/ -name "*.php" -exec php -l {} \;
+      run: bash tools/lint-php.sh tools examples projects tests
 
-    - name: Run Schema.org Validator Self-Tests
-      run: node tools/schema-graph-validator.js --test
+    - name: Run Schema.org Validator Tests
+      run: |
+        node tools/schema-graph-validator.js --test
+        node tests/schema-validator.test.js
 
     - name: Run PHP SEO Safety Verifier Self-Tests
       run: php tools/verify-seo-safety.php --self-test
+
+    - name: Run Regression Tests
+      run: |
+        php tests/run-php-tests.php
+        php tests/guard.test.php
+        bash tests/lint-php.test.sh
 
     - name: Run Harness 100-Point Audit
       run: bash tools/audit-harness.sh

@@ -116,7 +116,7 @@ cp tools/wp-seo-guard.php /path/to/wordpress/wp-content/mu-plugins/
 
 ### 4. Run the Verification Suite
 ```bash
-npm test
+npm run test:all   # Node.js + PHP 8.1+ (self-tests and regression tests)
 bash tools/audit-harness.sh
 ```
 
@@ -125,9 +125,10 @@ bash tools/audit-harness.sh
 ## 🛠️ Built-in Tool Suite
 
 1. **`schema-graph-validator.js`**: Node.js CLI tool validating Schema.org JSON-LD graphs against Google Search Central Rich Result specs (`WebSite`, `Organization`, `Product`, `Article`, `BreadcrumbList`, `FAQPage`).
-2. **`verify-seo-safety.php`**: Standalone PHP scanner flagging unconditional `noindex` filters, relative canonicals, and unescaped dynamic meta.
-3. **`wp-seo-guard.php`**: Must-Use Plugin (`mu-plugin`) that intercepts and neutralizes dangerous runtime actions live.
+2. **`verify-seo-safety.php`**: Standalone, tokenizer-based PHP scanner flagging any `noindex` (wp_robots, X-Robots-Tag, robots meta) not restricted to narrow contexts, HTTP/relative canonicals, and unescaped dynamic output in meta tags.
+3. **`wp-seo-guard.php`**: Must-Use Plugin (`mu-plugin`) that neutralizes accidental homepage `noindex` (staging excluded), normalizes canonicals via `get_canonical_url`, and halts self-redirect loops.
 4. **`audit-harness.sh`**: Zero-dependency shell audit that rates any WordPress repository from 0 to 100 based on the 5 harness subsystems.
+5. **`lint-php.sh`**: Runs `php -l` on every PHP file and fails on any syntax error (used by CI).
 
 ---
 

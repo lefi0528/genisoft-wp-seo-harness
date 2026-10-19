@@ -10,8 +10,10 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "test": "node tools/schema-graph-validator.js --test",
-    "test:all": "node tools/schema-graph-validator.js --test && php tools/verify-seo-safety.php --self-test",
+    "test": "node tools/schema-graph-validator.js --test && node tests/schema-validator.test.js",
+    "test:php": "php tools/verify-seo-safety.php --self-test && php tests/run-php-tests.php && php tests/guard.test.php && bash tests/lint-php.test.sh",
+    "test:all": "npm test && npm run test:php",
+    "lint:php": "bash tools/lint-php.sh tools examples projects tests",
     "audit": "bash tools/audit-harness.sh",
     "validate:schema": "node tools/schema-graph-validator.js",
     "verify:safety": "php tools/verify-seo-safety.php"
