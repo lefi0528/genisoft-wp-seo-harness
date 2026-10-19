@@ -15,14 +15,14 @@ Your goal is to maximize search engine discoverability, structured data coverage
 2. **Canonical Integrity**:
    - Canonical URLs MUST be absolute, lowercase, and strictly use `https://`.
    - Never point canonicals to redirected URLs (301/302) or 404 pages.
-   - Always hook into `wp_get_canonical_url` rather than hardcoding `<link rel="canonical">`.
+   - Always filter `get_canonical_url` (applied by `wp_get_canonical_url()`) rather than hardcoding `<link rel="canonical">`.
 3. **NoIndex Safeguard**:
    - NEVER inject `noindex` on `is_front_page()` or `is_home()`.
    - `noindex` is reserved strictly for internal search results (`is_search()`), 404 pages (`is_404()`), or explicitly tagged admin/thin utility endpoints.
 4. **Structured Data Validation**:
    - Schema.org markup MUST use the unified `@graph` format.
    - Every entity in `@graph` MUST have a globally unique `@id` URI.
-   - Never leave dangling `@id` references. Run `node tools/schema-graph-validator.js` before declaring completion.
+   - Never leave dangling `@id` references. Run `node tools/schema-graph-validator.js <file>` before declaring completion.
 5. **Security & Escaping**:
    - All meta tag values rendered into HTML MUST be escaped using `esc_attr()`.
    - JSON-LD outputs MUST be encoded via `wp_json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)`.
@@ -77,7 +77,7 @@ If ANY check fails: fix immediately and re-run.
 
 A task is considered **DONE** only when:
 - [ ] Syntax check (`php -l`) exits code 0 with no warnings.
-- [ ] `php tools/verify-seo-safety.php` exits code 0 with 0 critical violations.
-- [ ] `node tools/schema-graph-validator.js` validates all JSON-LD entities.
+- [ ] `php tools/verify-seo-safety.php <modified files>` exits code 0 with 0 critical violations.
+- [ ] `node tools/schema-graph-validator.js <rendered JSON-LD file>` validates all JSON-LD entities.
 - [ ] No PHP Notices, Warnings, or Deprecated logs in `wp-content/debug.log`.
 - [ ] `seo_tasks.json` and `progress.md` updated with verifiable evidence.
