@@ -132,11 +132,11 @@ namespace {
 
     // Redirects
     wp_reset();
-    $check($redirect('https://example.com/page/') === 'wp_die 508', 'Absolute self-redirect is halted with HTTP 508');
-    $check($redirect('/page/') === 'wp_die 508', 'Relative self-redirect is halted with HTTP 508');
-    $check($redirect('//example.com/page/') === 'wp_die 508', 'Protocol-relative self-redirect resolves with the request scheme and is halted');
+    $check($redirect('https://example.com/page/') === 'wp_die 503', 'Absolute self-redirect is halted with HTTP 503');
+    $check($redirect('/page/') === 'wp_die 503', 'Relative self-redirect is halted with HTTP 503');
+    $check($redirect('//example.com/page/') === 'wp_die 503', 'Protocol-relative self-redirect resolves with the request scheme and is halted');
     $check($redirect('//example.com/other-page/') === 'kept', 'Protocol-relative redirect to another URL is untouched');
-    $check($redirect('https://EXAMPLE.com:443/page/#section') === 'wp_die 508', 'Self-redirect is detected despite host case, default port and fragment');
+    $check($redirect('https://EXAMPLE.com:443/page/#section') === 'wp_die 503', 'Self-redirect is detected despite host case, default port and fragment');
     $check($redirect('https://example.com/other-page/') === 'kept', 'Redirect to another URL is untouched');
     $check($redirect('https://example.com/page') === 'kept', 'Trailing-slash redirect to a different URL is untouched');
 
@@ -145,7 +145,7 @@ namespace {
 
     wp_reset(['ssl' => false]);
     $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
-    $check($redirect('https://example.com/page/') === 'wp_die 508', 'Behind a TLS proxy, an HTTPS redirect to the same URL is halted (classic is_ssl() loop)');
+    $check($redirect('https://example.com/page/') === 'wp_die 503', 'Behind a TLS proxy, an HTTPS redirect to the same URL is halted (classic is_ssl() loop)');
 
     if ($failures > 0) {
         echo "\033[31m$failures WP SEO Guard regression test(s) FAILED.\033[0m\n";

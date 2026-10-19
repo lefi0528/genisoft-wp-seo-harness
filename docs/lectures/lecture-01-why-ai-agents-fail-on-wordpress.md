@@ -2,7 +2,7 @@
 
 ## The Paradox of Agent Intelligence
 
-Modern foundation models (Claude Opus 4.5, GPT-5, DeepSeek R1) possess remarkable programming knowledge. They can write complex algorithms in Python, TypeScript, and Rust with near-zero syntax errors.
+Modern foundation models possess remarkable programming knowledge: they write complex algorithms in Python, TypeScript, and Rust that usually work on the first try.
 
 Yet, when placed in a real WordPress repository, these same models frequently:
 1. Trigger the **White Screen of Death (WSOD)** by introducing a fatal PHP syntax error in `functions.php`.

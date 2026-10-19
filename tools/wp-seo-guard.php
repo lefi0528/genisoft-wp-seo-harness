@@ -109,11 +109,13 @@ class WpSeoGuard {
         }
 
         error_log('[GENISOFT HARNESS ALERT] Self-redirect to ' . $location . ' (HTTP ' . $status . ') HALTED: it would loop forever.');
+        // 503: a temporary error search engines retry without indexing. WordPress cannot send 508
+        // (Loop Detected): status_header() drops codes missing from get_status_header_desc(), so the page would go out as 200.
         wp_die(
             '<h1>[GENISOFT HARNESS ERROR] Redirect Loop Detected</h1>' .
             '<p>This request redirects to itself. Halting request to prevent an infinite redirect loop.</p>',
             'SEO Safety Guard Halt',
-            ['response' => 508]
+            ['response' => 503]
         );
 
         return $location;

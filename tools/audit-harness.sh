@@ -53,6 +53,7 @@ report() {
         echo -e "${RED}FAIL (0/${max}) - ${detail}${NC}"
     fi
     SCORE=$((SCORE + earned))
+    return 0
 }
 
 # expect_exit <expected-code> <command...>
@@ -60,7 +61,10 @@ expect_exit() {
     local expected=$1
     shift
     "$@" >/dev/null 2>&1
-    [[ $? -eq $expected ]]
+    if [[ $? -eq $expected ]]; then
+        return 0
+    fi
+    return 1
 }
 
 echo -e "${CYAN}=== Auditing WordPress SEO Harness in: ${TARGET_DIR} ===${NC}\n"

@@ -196,26 +196,28 @@ class SchemaValidator {
       return;
     }
 
-    for (const raw of asArray(entity.offers)) {
-      if (isReference(raw) && !this.entityMap.has(raw['@id'])) {
-        continue; // Reported as a dangling reference
+    asArray(entity.offers).forEach((raw) => this.validateOffer(raw));
+  }
+
+  validateOffer(raw) {
+    if (isReference(raw) && !this.entityMap.has(raw['@id'])) {
+      return; // Reported as a dangling reference
+    }
+    const offer = this.resolve(raw);
+    if (!isObject(offer)) {
+      this.errors.push(`[Product -> Offer] Invalid offer: ${JSON.stringify(raw)}`);
+      return;
+    }
+    const specification = isObject(offer.priceSpecification) ? offer.priceSpecification : {};
+    if (typesOf(offer).includes('AggregateOffer')) {
+      if (!isPresent(offer.lowPrice)) {
+        this.errors.push(`[Product -> AggregateOffer] Missing 'lowPrice' property required by Google`);
       }
-      const offer = this.resolve(raw);
-      if (!isObject(offer)) {
-        this.errors.push(`[Product -> Offer] Invalid offer: ${JSON.stringify(raw)}`);
-        continue;
-      }
-      const specification = isObject(offer.priceSpecification) ? offer.priceSpecification : {};
-      if (typesOf(offer).includes('AggregateOffer')) {
-        if (!isPresent(offer.lowPrice)) {
-          this.errors.push(`[Product -> AggregateOffer] Missing 'lowPrice' property required by Google`);
-        }
-      } else if (!isPresent(offer.price) && !isPresent(specification.price)) {
-        this.errors.push(`[Product -> Offer] Missing 'price' property required by Google (or priceSpecification.price)`);
-      }
-      if (!isPresent(offer.priceCurrency) && !isPresent(specification.priceCurrency)) {
-        this.warnings.push(`[Product -> Offer] Missing 'priceCurrency' (e.g. USD, EUR): required for Google merchant listings`);
-      }
+    } else if (!isPresent(offer.price) && !isPresent(specification.price)) {
+      this.errors.push(`[Product -> Offer] Missing 'price' property required by Google (or priceSpecification.price)`);
+    }
+    if (!isPresent(offer.priceCurrency) && !isPresent(specification.priceCurrency)) {
+      this.warnings.push(`[Product -> Offer] Missing 'priceCurrency' (e.g. USD, EUR): required for Google merchant listings`);
     }
   }
 

@@ -55,6 +55,9 @@ $check($run($scannerArg) === 2, 'Scanner without a target is a usage error, not 
 $check($run("$scannerArg tools") === 0, 'Scanning tools/ passes');
 $check($run("$scannerArg projects/project-01-baseline-vs-harnessed/starter") === 1, 'Scanning the vulnerable starter fails');
 
+// project-03 runs the real runtime guard: its simulations must keep passing
+$check($run(escapeshellarg("$root/projects/project-03-runtime-safety-guard/solution/test-runtime-interception.php")) === 0, 'project-03 simulations pass against tools/wp-seo-guard.php');
+
 // Task gates: executable ones must pass, all of them must name their target
 $tasks = json_decode((string) file_get_contents("$root/templates/seo_tasks.json"), true)['tasks'];
 foreach ($tasks as $task) {

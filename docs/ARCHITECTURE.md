@@ -54,4 +54,4 @@ The **Genisoft WordPress SEO Harness** wraps the AI agent in a deterministic, fi
 - A zero-overhead Must-Use Plugin (`mu-plugin`) that intercepts dangerous runtime operations:
   - Strips any accidental `noindex` on the homepage at filter priority `9999`, except when "Discourage search engines" is enabled (staging).
   - Filters `get_canonical_url`: forces HTTPS on HTTPS sites and aligns the trailing slash with the permalink structure.
-  - Halts self-redirects (a `wp_redirect` back to the requested URL) with HTTP 508.
+  - Halts self-redirects (a `wp_redirect` back to the requested URL) with HTTP 503.

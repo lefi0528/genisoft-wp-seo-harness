@@ -17,6 +17,6 @@ By deploying `tools/wp-seo-guard.php` to `wp-content/mu-plugins/`, we establish 
 2. **Canonical URL Normalizer**:
    Filters `get_canonical_url` (applied by `wp_get_canonical_url()`): forces `https://` on HTTPS sites and aligns the trailing slash with the permalink structure, so the canonical never points to a redirect.
 3. **Self-Redirect Trap**:
-   Filters `wp_redirect`. When a redirect targets the URL being requested (including the classic `is_ssl()` loop behind a TLS proxy), the guard halts with HTTP 508 and a human-readable diagnostic message. Multi-hop loops (A → B → A) span several requests: detect them with an external crawl such as `curl -IL --max-redirs 5`.
+   Filters `wp_redirect`. When a redirect targets the URL being requested (including the classic `is_ssl()` loop behind a TLS proxy), the guard halts with HTTP 503 and a human-readable diagnostic message. Multi-hop loops (A → B → A) span several requests: detect them with an external crawl such as `curl -IL --max-redirs 5`.
 
 These guards contain the most common runtime faults. They complement, not replace, the static verification gates and a post-deploy crawl.
