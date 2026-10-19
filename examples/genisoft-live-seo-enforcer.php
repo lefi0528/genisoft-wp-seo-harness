@@ -101,9 +101,14 @@ class LiveSeoEnforcer {
         $pageUrl = (string) get_permalink();
         $logo = self::logoUrl();
 
+        // Each @id is built once, so every reference points to exactly the entity it names
+        $organizationId = $home . '#organization';
+        $websiteId = $home . '#website';
+        $breadcrumbId = $pageUrl . '#breadcrumb';
+
         $organization = [
             '@type' => 'Organization',
-            '@id' => $home . '#organization',
+            '@id' => $organizationId,
             'name' => 'Genisoft',
             'url' => $home,
             'address' => [
@@ -127,10 +132,10 @@ class LiveSeoEnforcer {
                 $organization,
                 [
                     '@type' => 'WebSite',
-                    '@id' => $home . '#website',
+                    '@id' => $websiteId,
                     'url' => $home,
                     'name' => 'Genisoft',
-                    'publisher' => ['@id' => $home . '#organization'],
+                    'publisher' => ['@id' => $organizationId],
                 ],
                 [
                     '@type' => 'WebPage',
@@ -138,13 +143,13 @@ class LiveSeoEnforcer {
                     'url' => $pageUrl,
                     'name' => self::TITLE,
                     'description' => self::DESCRIPTION,
-                    'isPartOf' => ['@id' => $home . '#website'],
-                    'about' => ['@id' => $home . '#organization'],
-                    'breadcrumb' => ['@id' => $pageUrl . '#breadcrumb'],
+                    'isPartOf' => ['@id' => $websiteId],
+                    'about' => ['@id' => $organizationId],
+                    'breadcrumb' => ['@id' => $breadcrumbId],
                 ],
                 [
                     '@type' => 'BreadcrumbList',
-                    '@id' => $pageUrl . '#breadcrumb',
+                    '@id' => $breadcrumbId,
                     'itemListElement' => [
                         ['@type' => 'ListItem', 'position' => 1, 'name' => 'Accueil', 'item' => $home],
                         ['@type' => 'ListItem', 'position' => 2, 'name' => 'Agence Web', 'item' => $pageUrl],
