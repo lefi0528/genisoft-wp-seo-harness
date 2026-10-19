@@ -1,16 +1,17 @@
 # Project 02: Schema Knowledge Graph Repair
 
 ## Objective
-Convert fragmented microdata into a unified, interconnected Schema.org `@graph` that passes Google Rich Results testing with zero dangling references.
+Repair a fragmented JSON-LD graph into a connected Schema.org `@graph`: Google's required properties present, every entity identified by an `@id`, and zero dangling references.
 
 ---
 
-## Step 1: Inspect Broken Microdata
+## Step 1: Inspect the Broken Graph
 Open `projects/project-02-schema-knowledge-graph/starter/broken-schema.json`.
 
 Notice the issues:
-- Product offer is missing `priceCurrency`.
-- Article references an `@id` node `#unknown-author` that does not exist in the graph.
+- The Product and the Article have no `@id`, so nothing can reference them.
+- The Product offer is missing `priceCurrency` (required for Google merchant listings).
+- The Article references an `@id` node `#unknown-author` that does not exist in the graph.
 
 Run the validator:
 ```bash
@@ -19,10 +20,13 @@ node tools/schema-graph-validator.js projects/project-02-schema-knowledge-graph/
 
 Output:
 ```text
-Errors:
-  - [Product -> Offer] Missing 'priceCurrency' property (e.g. USD, EUR)
+JSON-LD blocks: 1 | Indexed Entities: 0
 Warnings:
-  - Dangling @id reference: entity references '#unknown-author', but no entity with that @id exists in the graph.
+  - [Product -> Offer] Missing 'priceCurrency' (e.g. USD, EUR): required for Google merchant listings
+Errors:
+  - [Product] Missing '@id' required by the harness for every @graph entity
+  - [Article] Missing '@id' required by the harness for every @graph entity
+  - Dangling @id reference: '#unknown-author' is referenced, but no entity with that @id is defined on this page.
 ```
 
 ---
@@ -37,6 +41,6 @@ node tools/schema-graph-validator.js projects/project-02-schema-knowledge-graph/
 
 Output:
 ```text
-Indexed Entities: 4
+JSON-LD blocks: 1 | Indexed Entities: 4
 ✔ Schema JSON-LD validation PASSED!
 ```

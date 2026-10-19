@@ -5,6 +5,8 @@
  */
 
 const { spawnSync } = require('child_process');
+const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
@@ -26,6 +28,15 @@ expectExit('No target is a usage error, not a pass', [], 2);
 expectExit('Missing file fails', ['does-not-exist.json'], 1);
 expectExit('Broken project-02 starter fails', ['projects/project-02-schema-knowledge-graph/starter/broken-schema.json'], 1);
 expectExit('Connected project-02 solution passes', ['projects/project-02-schema-knowledge-graph/solution/connected-knowledge-graph.json'], 0);
+
+// HTML pages: every JSON-LD block is validated, whatever its attributes (Yoast adds a class)
+const page = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'schema-')), 'page.html');
+fs.writeFileSync(page, '<script type="application/ld+json" class="yoast-schema-graph">{"@type":"WebSite","name":"X","url":"https://example.com"}</script>\n'
+  + '<script type="application/ld+json">{"@type":"Product","name":"P","offers":{"@type":"Offer"}}</script>');
+expectExit('A broken second JSON-LD block fails the page', [page], 1);
+fs.writeFileSync(page, '<script type="application/ld+json" class="yoast-schema-graph">{"@type":"WebSite","name":"X","url":"https://example.com"}</script>');
+expectExit('A Yoast-style block with extra attributes is read', [page], 0);
+fs.rmSync(path.dirname(page), { recursive: true, force: true });
 
 if (failures > 0) {
   console.error(`\x1b[31m${failures} schema-graph-validator regression test(s) FAILED.\x1b[0m`);
