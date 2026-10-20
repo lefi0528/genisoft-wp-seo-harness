@@ -9,7 +9,7 @@ To transform an unreliable AI agent into a deterministic software engineer on Wo
 │  ┌──────────────┐  ┌──────────────┐  ┌───────────────────────┐  │
 │  │ Instructions │  │    State     │  │     Verification      │  │
 │  │   AGENTS.md  │  │seo_tasks.json│  │ verify-seo-safety.php │  │
-│  │   CLAUDE.md  │  │  progress.md │  │schema-graph-validator │  │
+│  │   CONTEXT.md │  │  progress.md │  │schema-graph-validator │  │
 │  └──────┬───────┘  └──────┬───────┘  └───────────┬───────────┘  │
 │         │                 │                      │              │
 │         ▼                 ▼                      ▼              │

@@ -36,7 +36,7 @@ This repository is both a **production runtime framework** and a **complete 10-l
 │  ┌───────────────────┐    ┌────────────────────┐    ┌────────────────────┐  │
 │  │ 1. INSTRUCTIONS   │    │ 2. STATE PERSIST   │    │ 3. VERIFICATION    │  │
 │  │    AGENTS.md      │    │    seo_tasks.json  │    │    Safety Scanner  │  │
-│  │    CLAUDE.md      │    │    progress.md     │    │    Schema Validator│  │
+│  │    CONTEXT.md     │    │    progress.md     │    │    Schema Validator│  │
 │  └─────────┬─────────┘    └──────────┬─────────┘    └──────────┬─────────┘  │
 │            │                         │                         │            │
 │            ▼                         ▼                         ▼            │

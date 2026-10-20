@@ -69,13 +69,13 @@ expect_exit() {
 
 echo -e "${CYAN}=== Auditing WordPress SEO Harness in: ${TARGET_DIR} ===${NC}\n"
 
-INSTRUCTIONS="$(first_file AGENTS.md CLAUDE.md templates/AGENTS.md || true)"
+INSTRUCTIONS="$(first_file AGENTS.md templates/AGENTS.md || true)"
 TASKS="$(first_file seo_tasks.json templates/seo_tasks.json || true)"
 
 # 1. Instructions Subsystem (20 pts): present and stating the SEO invariants
-echo -n "Checking Subsystem 1: Instructions (AGENTS.md / CLAUDE.md)... "
+echo -n "Checking Subsystem 1: Instructions (AGENTS.md)... "
 earned=0
-detail="Missing AGENTS.md or CLAUDE.md"
+detail="Missing AGENTS.md"
 if [[ -n "$INSTRUCTIONS" ]]; then
     earned=10
     detail="Instructions do not state the noindex, canonical and escaping invariants"

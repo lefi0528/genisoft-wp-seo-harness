@@ -12,7 +12,7 @@ bash tools/audit-harness.sh
 
 ### Certification Scorecard
 ```text
-Checking Subsystem 1: Instructions (AGENTS.md / CLAUDE.md)... PASS (+20 pts)
+Checking Subsystem 1: Instructions (AGENTS.md)... PASS (+20 pts)
 Checking Subsystem 2: State Persistence (seo_tasks.json & progress.md)... PASS (+20 pts)
 Checking Subsystem 3: Verification (verify-seo-safety.php / schema-validator)... PASS (+20 pts)
 Checking Subsystem 4: Scope Control (Atomic task backlog & DoD)... PASS (+20 pts)

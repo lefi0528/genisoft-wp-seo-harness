@@ -17,7 +17,7 @@ The **Genisoft WordPress SEO Harness** wraps the AI agent in a deterministic, fi
 │  ┌───────────────────┐    ┌────────────────────┐    ┌────────────────────┐  │
 │  │ 1. INSTRUCTIONS   │    │ 2. STATE PERSIST   │    │ 3. VERIFICATION    │  │
 │  │    AGENTS.md      │    │    seo_tasks.json  │    │    Safety Scanner  │  │
-│  │    CLAUDE.md      │    │    progress.md     │    │    Schema Validator│  │
+│  │    CONTEXT.md     │    │    progress.md     │    │    Schema Validator│  │
 │  └─────────┬─────────┘    └──────────┬─────────┘    └──────────┬─────────┘  │
 │            │                         │                         │            │
 │            ▼                         ▼                         ▼            │
